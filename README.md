@@ -1,7 +1,7 @@
-get
+# GET
 curl --location --request GET 'http://localhost:8080/'
 
-post
+# POST
 curl --location --request POST 'http://localhost:8080/' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -10,7 +10,7 @@ curl --location --request POST 'http://localhost:8080/' \
     "lastname": "hai"
 }'
 
-put
+# PUT
 curl --location --request PUT 'http://localhost:8080/2' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -19,5 +19,5 @@ curl --location --request PUT 'http://localhost:8080/2' \
     "lastname": "hai"
 }'
 
-delete
+# DELETE
 curl --location --request DELETE 'http://localhost:8080/2'
