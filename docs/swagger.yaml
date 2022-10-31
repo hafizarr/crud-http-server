@@ -1,0 +1,127 @@
+definitions:
+  main.Person:
+    properties:
+      firstname:
+        type: string
+      id:
+        type: integer
+      lastname:
+        type: string
+    type: object
+  main.Response:
+    properties:
+      data: {}
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /person:
+    get:
+      consumes:
+      - application/json
+      description: do get person
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.Response'
+      summary: get person
+      tags:
+      - person
+    post:
+      consumes:
+      - application/json
+      description: do store person
+      parameters:
+      - description: payload
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/main.Person'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.Response'
+      summary: store person
+      tags:
+      - person
+  /person/:id:
+    delete:
+      consumes:
+      - application/json
+      description: do delete person
+      parameters:
+      - description: id
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: payload
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/main.Person'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.Response'
+      summary: delete person
+      tags:
+      - person
+    put:
+      consumes:
+      - application/json
+      description: do update person
+      parameters:
+      - description: id
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: payload
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/main.Person'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.Response'
+      summary: update person
+      tags:
+      - person
+swagger: "2.0"

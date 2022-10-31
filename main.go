@@ -1,9 +1,13 @@
 package main
 
 import (
+	"crud-http-server/docs"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	// "github.com/go-project-name/docs"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Person struct {
@@ -18,28 +22,40 @@ type Response struct {
 	Status  int         `json:"status"`
 }
 
-var listPersonGlobal *[]Person
+var listPersonGlobal []*Person
 
 func main() {
-	var listPerson []Person
-	listPerson = append(listPerson, Person{
-		ID:        1,
-		FirstName: "Hafiz",
-		LastName:  "Arrahman",
-	})
-	listPersonGlobal = &listPerson
-
 	r := gin.Default()
-	r.GET("/", GetPersons)
-	r.POST("/", StorePerson)
-	r.PUT("/:id", UpdatePerson)
-	r.DELETE("/:id", DeletePerson)
+	docs.SwaggerInfo.BasePath = "/api/v1"
 
+	apiV1 := r.Group("/api/v1")
+	{
+		person := apiV1.Group("/person")
+		{
+			person.GET("/", GetPersons)
+			person.POST("/", StorePerson)
+			person.PUT("/:id", UpdatePerson)
+			person.DELETE("/:id", DeletePerson)
+		}
+	}
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	r.Run()
 }
 
+// @BasePath /api/v1
+// GetPerson godoc
+// @Summary get person
+// @Schemes
+// @Description do get person
+// @Tags person
+// @Accept json
+// @Produce json
+// @Success 200 {object} Response
+// @Success 400 {object} Response
+// @Router /person [get]
 func GetPersons(c *gin.Context) {
-	if len(*listPersonGlobal) == 0 {
+	if len(listPersonGlobal) == 0 {
 		Response := Response{
 			Data:    listPersonGlobal,
 			Message: "not found",
@@ -57,6 +73,18 @@ func GetPersons(c *gin.Context) {
 	c.JSON(200, Response)
 }
 
+// @BasePath /api/v1
+// StorePerson godoc
+// @Summary store person
+// @Schemes
+// @Description do store person
+// @Tags person
+// @Accept json
+// @Produce json
+// @Param   Body body   Person  true  "payload"
+// @Success 200 {object} Response
+// @Success 400 {object} Response
+// @Router /person [post]
 func StorePerson(c *gin.Context) {
 	var request Person
 	err := c.BindJSON(&request)
@@ -70,11 +98,7 @@ func StorePerson(c *gin.Context) {
 		return
 	}
 
-	var listPerson []Person
-	listPerson = *listPersonGlobal
-
-	listPerson = append(listPerson, request)
-	listPersonGlobal = &listPerson
+	listPersonGlobal = append(listPersonGlobal, &request)
 
 	Response := Response{
 		Data:    request,
@@ -84,6 +108,19 @@ func StorePerson(c *gin.Context) {
 	c.JSON(200, Response)
 }
 
+// @BasePath /api/v1
+// UpdatePerson godoc
+// @Summary update person
+// @Schemes
+// @Description do update person
+// @Tags person
+// @Accept json
+// @Produce json
+// @Param   id  query   string  true  "id"
+// @Param   Body body   Person  true  "payload"
+// @Success 200 {object} Response
+// @Success 400 {object} Response
+// @Router /person/:id [put]
 func UpdatePerson(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	var (
@@ -101,17 +138,12 @@ func UpdatePerson(c *gin.Context) {
 		return
 	}
 
-	var listPerson []Person
-	listPerson = *listPersonGlobal
-
-	for i, data := range listPerson {
+	for i, data := range listPersonGlobal {
 		if data.ID == id {
 			isIsset = true
-			listPerson[i].ID = request.ID
-			listPerson[i].FirstName = request.FirstName
-			listPerson[i].LastName = request.LastName
-
-			listPersonGlobal = &listPerson
+			listPersonGlobal[i].ID = request.ID
+			listPersonGlobal[i].FirstName = request.FirstName
+			listPersonGlobal[i].LastName = request.LastName
 
 			break
 		}
@@ -135,21 +167,29 @@ func UpdatePerson(c *gin.Context) {
 	c.JSON(200, Response)
 }
 
+// @BasePath /api/v1
+// DeletePerson godoc
+// @Summary delete person
+// @Schemes
+// @Description do delete person
+// @Tags person
+// @Accept json
+// @Produce json
+// @Param   id  query   string  true  "id"
+// @Param   Body body   Person  true  "payload"
+// @Success 200 {object} Response
+// @Success 400 {object} Response
+// @Router /person/:id [delete]
 func DeletePerson(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	var (
 		isIsset bool
 	)
 
-	var listPerson []Person
-	listPerson = *listPersonGlobal
-
-	for i, data := range listPerson {
+	for i, data := range listPersonGlobal {
 		if data.ID == id {
 			isIsset = true
-			listPerson = RemoveIndex(listPerson, i)
-
-			listPersonGlobal = &listPerson
+			listPersonGlobal = RemoveIndex(listPersonGlobal, i)
 
 			break
 		}
@@ -173,6 +213,6 @@ func DeletePerson(c *gin.Context) {
 	c.JSON(200, Response)
 }
 
-func RemoveIndex(listPerson []Person, index int) []Person {
+func RemoveIndex(listPerson []*Person, index int) []*Person {
 	return append(listPerson[:index], listPerson[index+1:]...)
 }
